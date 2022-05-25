@@ -1,19 +1,19 @@
-const { Schema, model } = require("../db/connection");
+const mongoose = require("mongoose");
 
-const sauceSchema = new Schema({
-  userId: { type: String, unique: true, required: true },
+const mongooseUniqueValidator = require("mongoose-unique-validator");
+
+const sauceSchema = mongoose.Schema({
+  userId: { type: String, required: true },
   name: { type: String, required: true },
   manufacturer: { type: String, required: true },
   description: { type: String, required: true },
   mainPepper: { type: String, required: true },
   imageUrl: { type: String, required: true },
   heat: { type: Number, required: true },
-  likes: { type: Number, required: true },
-  dislikes: { type: Number, required: true },
-  // usersLiked: {type: String, required: true}
-  // usersDisliked: {type: String, required: true}
+  likes: { type: Number, default: 0},
+  dislikes: { type: Number, default: 0},
+  usersLiked: { type: Array, default: []},
+  usersDisliked: { type: Array, default: []},
 });
 
-const sauceModel = model("Sauce", sauceSchema);
-
-module.exports = sauceModel;
+module.exports = mongoose.model("Sauce", sauceSchema);
