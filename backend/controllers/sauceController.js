@@ -1,3 +1,4 @@
+const { get } = require("mongoose");
 const app = require("../app");
 const Sauce = require("../models/sauceModel");
 
@@ -76,5 +77,32 @@ exports.deleteSauce = (req, res) => {
 };
 
 exports.likeSauce = (req, res) => {
-  console.log("likeSauce");
+  // const getLikes = db.sauces.find({_id: req.params.id})
+  let arrayToUpdate;
+  let likesToUpdate
+  let likeValue = 0;
+  if (req.body.like === 1) {
+    arrayToUpdate = "usersLiked";
+    likesToUpdate = "likes"
+    likeValue = 1;
+  } else if (req.body.like === -1) {
+    arrayToUpdate = "usersDisliked";
+    likesToUpdate = "dislikes"
+    likeValue = 1;
+  } else if (req.body.like === 0) {
+    likeValue = -1;
+  }
+  const filter = { _id: req.params.id };
+  Sauce.findOneAndUpdate(filter, {
+    $push: { [arrayToUpdate]: req.body.userId },
+    $inc: { [likesToUpdate]: likeValue },
+  })
+    .then(() => {
+      res.status(201).json({});
+    })
+    .catch((error) => {
+      res.status(400).json({
+        error: error,
+      });
+    });
 };
