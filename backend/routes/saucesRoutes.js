@@ -13,7 +13,8 @@ router
   .route("/:id", authSauce)
   .get(sauceController.getSauce)
   .put(multer, sauceController.updateSauce)
-  .delete(sauceController.deleteSauce)
-  .post(sauceController.likeSauce);
+  .delete(sauceController.deleteSauce);
+
+router.route("/:id/like", authSauce).post(sauceController.likeSauce);
 
 module.exports = router;
