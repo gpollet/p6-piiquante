@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-dotenv.config({ path: "../config.env" });
+dotenv.config({ path: "../.env" });
 const userToken = process.env.USER_TOKEN;
 
 exports.signup = (req, res, next) => {
