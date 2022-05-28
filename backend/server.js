@@ -1,5 +1,8 @@
 const dotenv = require("dotenv");
 const http = require("http");
+// For production (thus not on localhost), make sure to use https by replacing the above line by the commented lines below
+// const https = require ('https')
+// const fs = require('fs');
 const mongoose = require("mongoose");
 const app = require("./app");
 
@@ -23,7 +26,6 @@ app.get("/", (req, res) => {
 
 const normalizePort = (val) => {
   const port = parseInt(val, 10);
-
   if (isNaN(port)) {
     return val;
   }
@@ -56,6 +58,12 @@ const errorHandler = (error) => {
   }
 };
 
+// HTTPS ready for production - Make sure to update paths to https instead of http in the front-end files, and delete the line to create http server below
+// const options = (res, req, next) => {
+//   key: fs.readFileSync('key.pem'),
+//   cert: fs.readFileSync('cert.pem')
+// };
+// const server = https.createServer(options, app);
 const server = http.createServer(app);
 
 server.on("error", errorHandler);

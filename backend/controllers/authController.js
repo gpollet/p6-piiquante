@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 dotenv.config({ path: "../.env" });
 const userToken = process.env.USER_TOKEN;
 
+// Chiffre le mot de passe de l'utilisateur, puis l'enregistre dans la base de donnée avec son email.
 exports.signup = (req, res, next) => {
   bcrypt
     .hash(req.body.password, 10)
@@ -16,7 +17,11 @@ exports.signup = (req, res, next) => {
       });
       user
         .save()
-        .then(() => res.status(201).json({ message: "Utilisateur créé" }))
+        .then(() => res.status(201).json({
+          message: "Utilisateur créé",
+          token: jwt.sign({ userId: user._id }, `${userToken}`, {
+            expiresIn: "24h",
+          })}))
         // Si utilisateur existe déjà : erreur 400
         .catch((error) => res.status(400).json({ error }));
     })
@@ -28,13 +33,13 @@ exports.login = (req, res, next) => {
   User.findOne({ email: req.body.email })
     .then((user) => {
       if (!user) {
-        return res.status(401);
+        return next(res.status(401));
       }
       bcrypt
         .compare(req.body.password, user.password)
         .then((correctPassword) => {
           if (!correctPassword) {
-            return res.status(401);
+            return next(res.status(401));
           }
           res.status(200).json({
             userId: user._id,
