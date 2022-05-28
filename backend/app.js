@@ -4,12 +4,19 @@ const express = require("express");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const path = require("path");
+const mongoSanitize = require("express-mongo-sanitize");
 
 const app = express();
 // Middlewares :
-app.use(helmet(
-  {crossOriginResourcePolicy: false}
-));
+// Supprime des caractères comme $, qui pourraient être utilisés pour faire une injection noSQL
+app.use(
+  mongoSanitize({
+    allowDots: true,
+    replaceWith: "_",
+  })
+);
+
+app.use(helmet({ crossOriginResourcePolicy: false }));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
