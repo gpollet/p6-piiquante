@@ -3,26 +3,9 @@ const http = require("http");
 // For production (thus not on localhost), make sure to use https by replacing the above line by the commented lines below
 // const https = require ('https')
 // const fs = require('fs');
-const mongoose = require("mongoose");
 const app = require("./app");
 
 dotenv.config({ path: "./.env" });
-
-const DB = process.env.DATABASE.replace(
-  "<PASSWORD>",
-  process.env.DATABASE_PASSWORD
-);
-
-mongoose
-  .connect(DB, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(console.log("Connecté à MongoDB."));
-
-app.get("/", (req, res) => {
-  res.send("Serveur OK");
-});
 
 const normalizePort = (val) => {
   const port = parseInt(val, 10);
@@ -70,7 +53,7 @@ server.on("error", errorHandler);
 server.on("listening", () => {
   const address = server.address();
   const bind = typeof address === "string" ? "pipe " + address : "port " + port;
-  console.log("Listening on " + bind);
+  console.log("Serveur OK sur " + bind);
 });
 
 server.listen(port);
