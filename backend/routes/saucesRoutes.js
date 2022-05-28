@@ -11,9 +11,10 @@ router
 
 router
   .route("/:id", authSauce)
-  .get(sauceController.getSauce)
   .put(multer, sauceController.updateSauce)
   .delete(sauceController.deleteSauce);
+
+router.route("/:id").get(sauceController.getSauce)
 
 router.route("/:id/like", authSauce).post(sauceController.likeSauce);
 
