@@ -1,8 +1,8 @@
-const { get, default: mongoose } = require("mongoose");
-const app = require("../app");
-const Sauce = require("../models/sauceModel");
-const db = mongoose.connection;
+"strict mode";
 
+const Sauce = require("../models/sauceModel");
+
+// Demande à la DB de renvoyer tous les documents de la collection Sauce.
 exports.getAllSauces = (req, res) => {
   Sauce.find()
     .then((sauces) => {
@@ -15,8 +15,9 @@ exports.getAllSauces = (req, res) => {
     });
 };
 
+// Demande à la DB de renvoyer le document de la collection Sauce qui a un _id identique à l'id de l'URI
 exports.getSauce = (req, res) => {
-  Sauce.findOne({ _id: req.params.id })
+  Sauce.findById(req.params.id)
     .then((sauce) => {
       res.status(200).json(sauce);
     })
@@ -48,6 +49,7 @@ exports.createSauce = (req, res) => {
     });
 };
 
+// Vérifie si un fichier est joint. Si oui, convertit le corps de la requête pour y insérer l'url de l'image, si non met à jour les champs avec les nouvelles informations fournies par l'utilisateur.
 exports.updateSauce = (req, res) => {
   const sauceObject = req.file
     ? {
@@ -57,16 +59,14 @@ exports.updateSauce = (req, res) => {
         }`,
       }
     : { ...req.body };
-  Sauce.updateOne(
-    { _id: req.params.id },
-    { ...sauceObject, _id: req.params.id }
-  )
+  Sauce.findByIdAndUpdate(req.params.id, { ...sauceObject, _id: req.params.id })
     .then(() => res.status(200).json({}))
     .catch((error) => res.status(400).json({ error }));
 };
 
+// Trouve la sauce ayant un _id correspondant à l'id de la requête, et la supprime.
 exports.deleteSauce = (req, res) => {
-  Sauce.deleteOne({ _id: req.params.id })
+  Sauce.findByIdAndDelete(req.params.id)
     .then(() => {
       res.status(200).json();
     })
@@ -77,29 +77,28 @@ exports.deleteSauce = (req, res) => {
     });
 };
 
+// Trouve la sauce correspondant à l'id de la page, puis analyse le corps de la requête pour savoir si l'utilisation a liké, disliké ou annulé un like/dislike. Si l'utilisateur like/dislike, son id est enregistré dans un array et le compteur associé augmente de 1. S'il s'agit d'une annulation de like/dislike, supprime l'ID de l'utilisateur de l'array et diminue le nombre de like/dislike en question de 1.
 exports.likeSauce = (req, res) => {
-  Sauce.findOne({
-    _id: req.params.id
-  })
+  Sauce.findById(req.params.id)
   .then ((sauce) => {
     if (req.body.like === 1) {
-  return Sauce.updateOne({_id: req.params.id}, {
+  return Sauce.findByIdAndUpdate(req.params.id, {
     $push: { usersLiked: req.body.userId },
     $inc: { likes: 1 },
   })
     } else if (req.body.like === -1) {
-      return Sauce.updateOne({_id: req.params.id}, {
+      return Sauce.findByIdAndUpdate(req.params.id, {
         $push: { usersDisliked: req.body.userId },
         $inc: { dislikes: 1 },
       })
     } else if (req.body.like === 0) {
       if (sauce.usersLiked.includes(req.body.userId)) {
-        return Sauce.updateOne({_id: req.params.id}, {
+        return Sauce.findByIdAndUpdate(req.params.id, {
           $pull: { usersLiked: req.body.userId },
           $inc: { likes: -1 },
         })
       } else if (sauce.usersDisliked.includes(req.body.userId)) {
-        return Sauce.updateOne({_id: req.params.id}, {
+        return Sauce.findByIdAndUpdate(req.params.id, {
           $pull: { usersDisliked: req.body.userId },
           $inc: { dislikes: -1 },
         })

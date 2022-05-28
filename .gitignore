@@ -99,3 +99,5 @@ tsconfig.spec.json
 .vscode/tasks.json
 .env
 backend/images
+backend/cert.pem
+backend/key.pem
