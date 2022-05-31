@@ -19,9 +19,6 @@ exports.signup = (req, res, next) => {
         .save()
         .then(() => res.status(201).json({
           message: "Utilisateur créé",
-          token: jwt.sign({ userId: user._id }, `${userToken}`, {
-            expiresIn: "24h",
-          })
         }))
         // Si utilisateur existe déjà : erreur 400
         .catch((error) => res.status(400).json({ error }));
