@@ -52,6 +52,19 @@ exports.createSauce = (req, res) => {
 
 // Vérifie si un fichier est joint. Si oui, convertit le corps de la requête pour y insérer l'url de l'image, si non met à jour les champs avec les nouvelles informations fournies par l'utilisateur.
 exports.updateSauce = (req, res) => {
+  Sauce.findById(req.params.id)
+  .then((sauce) => {
+      if (req.file) {
+      const imgPath = sauce.imageUrl.replace("http://localhost:3000", ".");
+      fs.unlink(imgPath, (err) => {
+        if (err) {
+          console.error(err);
+        } else {
+          console.log("Image supprimée");
+        }
+      });
+    }
+    });
   const sauceObject = req.file
     ? {
         ...JSON.parse(req.body.sauce),
