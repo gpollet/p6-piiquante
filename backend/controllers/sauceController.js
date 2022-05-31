@@ -80,31 +80,31 @@ exports.deleteSauce = (req, res) => {
 // Trouve la sauce correspondant à l'id de la page, puis analyse le corps de la requête pour savoir si l'utilisation a liké, disliké ou annulé un like/dislike. Si l'utilisateur like/dislike, son id est enregistré dans un array et le compteur associé augmente de 1. S'il s'agit d'une annulation de like/dislike, supprime l'ID de l'utilisateur de l'array et diminue le nombre de like/dislike en question de 1.
 exports.likeSauce = (req, res) => {
   Sauce.findById(req.params.id)
-  .then ((sauce) => {
-    if (req.body.like === 1) {
-  return Sauce.findByIdAndUpdate(req.params.id, {
-    $push: { usersLiked: req.body.userId },
-    $inc: { likes: 1 },
-  })
-    } else if (req.body.like === -1) {
-      return Sauce.findByIdAndUpdate(req.params.id, {
-        $push: { usersDisliked: req.body.userId },
-        $inc: { dislikes: 1 },
-      })
-    } else if (req.body.like === 0) {
-      if (sauce.usersLiked.includes(req.body.userId)) {
-        return Sauce.findByIdAndUpdate(req.params.id, {
-          $pull: { usersLiked: req.body.userId },
-          $inc: { likes: -1 },
-        })
-      } else if (sauce.usersDisliked.includes(req.body.userId)) {
-        return Sauce.findByIdAndUpdate(req.params.id, {
-          $pull: { usersDisliked: req.body.userId },
-          $inc: { dislikes: -1 },
-        })
+    .then((sauce) => {
+      if (req.body.like === 1) {
+        return sauce.update({
+          $push: { usersLiked: req.body.userId },
+          $inc: { likes: 1 },
+        });
+      } else if (req.body.like === -1) {
+        return sauce.update({
+          $push: { usersDisliked: req.body.userId },
+          $inc: { dislikes: 1 },
+        });
+      } else if (req.body.like === 0) {
+        if (sauce.usersLiked.includes(req.body.userId)) {
+          return sauce.update({
+            $pull: { usersLiked: req.body.userId },
+            $inc: { likes: -1 },
+          });
+        } else if (sauce.usersDisliked.includes(req.body.userId)) {
+          return sauce.update({
+            $pull: { usersDisliked: req.body.userId },
+            $inc: { dislikes: -1 },
+          });
+        }
       }
-    }
-  })
+    })
     .then(() => {
       res.status(200).json({});
     })
