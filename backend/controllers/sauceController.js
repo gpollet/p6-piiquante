@@ -1,5 +1,6 @@
 "strict mode";
 
+const fs = require("fs");
 const Sauce = require("../models/sauceModel");
 
 // Demande à la DB de renvoyer tous les documents de la collection Sauce.
@@ -67,6 +68,16 @@ exports.updateSauce = (req, res) => {
 // Trouve la sauce ayant un _id correspondant à l'id de la requête, et la supprime.
 exports.deleteSauce = (req, res) => {
   Sauce.findByIdAndDelete(req.params.id)
+    .then((sauce) => {
+      const imgPath = sauce.imageUrl.replace("http://localhost:3000", ".");
+      fs.unlink(imgPath, (err) => {
+        if (err) {
+          console.error(err);
+        } else {
+          console.log("Image supprimée");
+        }
+      });
+    })
     .then(() => {
       res.status(200).json();
     })
