@@ -22,13 +22,9 @@ mongoose
       useUnifiedTopology: true,
     }
   )
-  .then(console.log("Connecté à MongoDB."))
+  .then(() => console.log("Connecté à MongoDB."))
   .catch((err) => {
-    if (fs.existsSync("./.env") === false) {
-      console.log(
-        "Connexion à la base de donnée impossible : fichier .env manquant."
-      );
-    }
+    console.log(err)
   });
 
 // Supprime des caractères comme $, qui pourraient être utilisés pour faire une injection noSQL
